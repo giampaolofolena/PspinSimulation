@@ -5,6 +5,14 @@ void Create_Directory(char *dir) {
     }
 }
 
+void SnapVector(vector<double> V, char *fname) {
+    FILE *pFile;
+    pFile = fopen (fname, "wb");
+    fwrite (&V[0], sizeof(double), V.size(), pFile);
+    fclose (pFile);
+}
+
+
 void SaveVector(variables *v, parameters *p, vector<double> V) {
 
     char Vsave[200];
@@ -15,6 +23,7 @@ void SaveVector(variables *v, parameters *p, vector<double> V) {
     fwrite (&V[0], sizeof(double), V.size(), pFile);
     fclose (pFile);
 }
+
 
 vector<double> OpenVector(int N,char *fname) {
 
@@ -75,7 +84,7 @@ void SaveSystem(variables *v, parameters *p) {
     fprintf(pFile,"dilute %c\n",p->dilute);
 
 
-    fclose (pFile);
+   fclose (pFile);
 }
 
 void OpenSystem(variables *v, parameters *p, char *fname) {

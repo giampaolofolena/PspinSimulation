@@ -459,6 +459,79 @@ void Initialize_Dilute_J(int p, vector<struct node> &J, int seedJ, int N, double
     RenormalizeNodes(J,norm2,N/2.);
 }
 
+void Initialize_Dilute_Boxed_J2(vector<struct node> &J, int seedJ, int N, double D, bool discrete) {
+
+    mt19937 generator(seedJ);
+
+    int p=2;
+
+    normal_distribution<double> distribution(0,1.0);
+
+    double dNJ = D*N/p;
+    for(int i=1; i<p; i++) { dNJ *= (N-i)/i; }
+    int NJ = (int)dNJ;
+
+    int boxL = (int) pow(D,-1/2.);
+
+    int bowL2=boxL*boxL;
+
+    int boxN = N/boxL;
+
+    int boxN2 = boxN*boxN;
+
+    uniform_int_distribution<int> int_dist(0,boxL-1);
+
+
+    cout << "boxL" << boxL << ' ' << pow(D,-1/2.) << ' ' << D << endl;
+    cout << "boxN" << boxN << endl;
+
+
+    int nj = 0;
+    double norm2=0;
+
+    int rep=0;
+
+    for(int i=0; i<boxN; i++) {
+        for(int j=0; j<i; j++) {
+
+            struct node newJ;
+                
+            double JJ = distribution(generator);
+            if(discrete==true) {
+            if(JJ>0) {newJ.J=1;}
+            if(JJ<0) {newJ.J=-1;}
+            }
+            else {
+                newJ.J = JJ;
+            }
+
+            long long int newSSS=0;
+
+            long long int X=i*boxL + int_dist(generator); newSSS += X<<(16*0);
+            long long int Y=j*boxL + int_dist(generator); newSSS += Y<<(16*1);
+
+                //cout << X << ' '<< Y << ' '<< Z << ' ' << endl; getchar(); 
+           
+            newJ.SSS = newSSS;
+
+            J.push_back(newJ);  
+ 
+            norm2 += newJ.J*newJ.J;
+
+                /*for(size_t ni=0;ni<nj;ni++){
+                    if(J[ni].SSS==newSSS) { rep++; cout << ni << endl;  break; }
+                }*/
+            nj++;
+        }
+    }
+
+
+    cout << "REPETITIONS: " << rep << endl;
+    cout << "Interactions: " << nj << ' ' << NJ << endl;
+
+    RenormalizeNodes(J,norm2,N/2.);
+}
+
 void Initialize_Dilute_Boxed_J3(vector<struct node> &J, int seedJ, int N, double D, bool discrete) {
 
     mt19937 generator(seedJ);

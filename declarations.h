@@ -13,6 +13,7 @@ vector<double> Initialize_System(variables *v, parameters *p);
 
 //inout.h
 void Create_Directory(char *dir);
+void SnapVector(vector<double> V, char *fname);
 void SaveVector(variables *v, parameters *p, vector<double> V);
 vector<double> OpenVector(int N,char *fname);
 void SaveSystem(variables *v, parameters *p);

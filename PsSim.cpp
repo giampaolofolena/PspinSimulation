@@ -45,7 +45,7 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 
-    
+
     struct parameters p;
     struct variables v;
     Input_Parameters(argc, argv, &v, &p);
@@ -112,6 +112,8 @@ int main(int argc, char *argv[]){
 		v.S1=v.S2; v.E1=v.E2; v.PG1=v.PG2; v.NPG1=v.NPG2;
 
 		v.CG0=v.CG1; v.H1=v.H2; v.RPG0=v.RPG1; v.RCG0=v.RCG1;
+
+		if(t%100==0) { char fname[400]; sprintf(fname,"%s/time%d_%f.v",p.dir,t,v.Time); SnapVector(v.S1,fname); printf(fname,"Write file time%d_%f.v",time,v.Time); }
 
 	}   
 	fprintf(p.fout, "\n");

@@ -4,11 +4,13 @@ vector<double> Initialize_System(variables *v, parameters *p) {
 
 	if(p->a2>0.) {
 		if(p->dilute=='y') { Initialize_Dilute_J(2,v->J2,p->seedJ,p->N,p->D2,true); }
+		else if(p->dilute=='b') { Initialize_Dilute_Boxed_J2(v->J2,p->seedJ,p->N,p->D2,true); }
 		else { 		Initialize_All_J(2,v->J2,p->seedJ,p->N); 	}
 		cout << "#normJ2" << sqrt(Norm2_J(v->J2)) << endl;
 	}
 	if(p->a3>0.) {
 		if(p->dilute=='y') { Initialize_Dilute_J(3,v->J3,p->seedJ,p->N,p->D3,true); }
+		else if(p->dilute=='b') { Initialize_Dilute_Boxed_J3(v->J2,p->seedJ,p->N,p->D3,true); }
 		else { 		Initialize_All_J(3,v->J3,p->seedJ,p->N); 	}
 		cout << "#normJ3" << sqrt(Norm2_J(v->J3)) << endl;
 	}

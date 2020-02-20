@@ -43,11 +43,11 @@ struct parameters {
 void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters *p) {
 
 	p->err=0.000001;
-    p->err2=pow(p->err,2);
+  p->err2=pow(p->err,2);
 
 	p->a2 = 1.;
-    p->a3 = 1.;
-    p->a4 = 1.;
+  p->a3 = 1.;
+  p->a4 = 1.;
 
 	p->N = 1000;
 	p->sqrtN = sqrt(p->N);
@@ -177,7 +177,10 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
   if(p->dilute=='y') {
 		p->D3=3./p->N;
 		p->D2=3./sqrt(p->N); //ATTENZIONE: se scalo D2 come D3 va a finire ad energie molto sotto soglia? perché?
-	} else { 
+	} else if (p->dilute=='b'){
+    p->D3=3./p->N;
+		p->D2=3./sqrt(p->N);
+  } else {
 		p->D2=1;
 		p->D3=1;
 		p->dilute='n'; 
