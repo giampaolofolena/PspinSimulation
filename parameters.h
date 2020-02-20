@@ -53,7 +53,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 	p->sqrtN = sqrt(p->N);
 
 	p->DT0 = 0.01;
-	p->TTime = 1000;
+	p->TTime = 10000;
 	
 	p->Beta = 0.;
 	p->Temp = 0.;
