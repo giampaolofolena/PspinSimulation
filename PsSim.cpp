@@ -113,7 +113,8 @@ int main(int argc, char *argv[]){
 
 		v.CG0=v.CG1; v.H1=v.H2; v.RPG0=v.RPG1; v.RCG0=v.RCG1;
 
-		if(t%100==0) { char fname[400]; sprintf(fname,"%s/time%d_%f.v",p.dir,t,v.Time); SnapVector(v.S1,fname); printf(fname,"Write file time%d_%f.v",time,v.Time); }
+		if(t%1000==0) { char fname[400]; sprintf(fname,"%s/time%d_%f.v",p.dir,t,v.Time); 
+SnapVector(v.S1,fname); /*printf(fname,"Write file time%d_%f.v",time,v.Time);*/ }
 
 	}   
 	fprintf(p.fout, "\n");
