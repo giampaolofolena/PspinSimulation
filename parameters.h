@@ -85,7 +85,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 
     printf("to see input parameters look at input.h!\n");
 
-    while ((c = getopt (Ac, Av, "N:J:S:b:T:I:v:F:D:c:A:M:t:2:3:4:i:")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
+    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:4:i:")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
     switch (c)
       {
       case 'N': //NUMBER OF SPINS
@@ -97,7 +97,11 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
         cvalue = optarg;
         p->seedJ=atoi(cvalue);
         break;
-      case 'S': //seedX OF THE CONFIGURATION
+      case 'S': //seedS OF THE CONFIGURATION
+        cvalue = optarg;
+        p->seedS=atoi(cvalue);
+        break;
+      case 'X': //seedX OF THE NOISE
         cvalue = optarg;
         p->seedX=atoi(cvalue);
         break;
