@@ -27,6 +27,7 @@ struct parameters {
 
 	char method[4];
 	char dilute;
+	double dilution;
 	char HessianEi;
 
 	FILE *fout,*fout2;
@@ -68,6 +69,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 	p->PGPGpar=0.999995;
 
 	p->dilute='y';
+	p->dilution=3;
 
 	p->HessianEi='n';
 
@@ -131,9 +133,9 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
         cvalue = optarg;
         p->Tfin = atof(cvalue);
         break;
-      case 'D': //Diluition  
+      case 'D': //Diluition if p->dilution=88888888 >> p->dilute='b'
         cvalue = optarg;
-        p->dilute = *cvalue;
+        p->dilution = atof(cvalue);
         break;
       case 'M': //METHOD OF MINIMIZATION
         cvalue = optarg;
@@ -191,16 +193,18 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
     if(pTemp!=-999) { p->Temp = pTemp; }
 	}
 
-  if(p->dilute=='y') {
-		p->D3=3./p->N;
-		p->D2=3./sqrt(p->N); //ATTENZIONE: se scalo D2 come D3 va a finire ad energie molto sotto soglia? perché?
-	} else if (p->dilute=='b'){
+  if(p->dilution<=p->N && p->dilution > 0) {
+    p->dilute='y'; 
+		p->D3=p->dilution/pow(p->N,1);
+		p->D2=p->dilution*100/pow(p->N,1); //ATTENZIONE: se scalo D2 come D3 va a finire ad energie molto sotto soglia? perché?
+	} else if (p->dilution==88888888){
+    p->dilute='b'; 
     p->D3=3./p->N;
 		p->D2=3./sqrt(p->N);
   } else {
+    p->dilute='n'; 
 		p->D2=1;
 		p->D3=1;
-		p->dilute='n'; 
 	}
 
 	sprintf(p->dir,"P%g,2+%g,3_N%d_sJ%d_D%c",p->a2,p->a3,p->N,p->seedJ,p->dilute);
