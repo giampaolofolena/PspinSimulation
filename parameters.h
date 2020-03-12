@@ -196,7 +196,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
   if(p->dilution<=p->N && p->dilution > 0) {
     p->dilute='y'; 
 		p->D3=p->dilution/pow(p->N,1);
-		p->D2=p->dilution*100/pow(p->N,1); //ATTENZIONE: se scalo D2 come D3 va a finire ad energie molto sotto soglia? perché?
+		p->D2=1; //ATTENZIONE: se scalo D2 come D3 va a finire ad energie molto sotto soglia? perché? meglio fissare D2=1
 	} else if (p->dilution==88888888){
     p->dilute='b'; 
     p->D3=3./p->N;
