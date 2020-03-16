@@ -6,8 +6,8 @@ double Sandwich(vector<double> &M, vector<double> &A);
 double DoubleSandwich(vector<double> &A, vector<double> &M, vector<double> &B);
 
 #ifdef LAPACKEE
-#include "/usr/include/gsl/gsl_cblas.h"  /// NEL CASO DI MAC metti solo "cblas.h" requires the link flag -lcblas
-//#include "cblas.h"
+//#include "/usr/include/gsl/gsl_cblas.h"  /// NEL CASO DI MAC metti solo "cblas.h" requires the link flag -lcblas
+#include "cblas.h"
 #include "lapacke.h" ///it requires the link flag -llapack
 
 /*vector<double> FirstOrderEigenPert(vector<double> H, vector<double> L) {
@@ -25,9 +25,9 @@ double DoubleSandwich(vector<double> &A, vector<double> &M, vector<double> &B);
 
 
 
-void Evaluate_eigenvalues(vector<double> &H, vector<double> &DH, vector<double> X, vector<double> G, int N, vector<double> &W, vector<double> &VW) {
+void Evaluate_eigenvalues(vector<double> &H, vector<double> G, vector<double> S, int N, vector<double> &W, vector<double> &VW) {
     
-    double n2X=0;
+    double n2S=0;
     double n2G=0;
     //for(int i; i<N; i++) { n2X+=X[i]*X[i]; }
 
@@ -57,13 +57,13 @@ void Evaluate_eigenvalues(vector<double> &H, vector<double> &DH, vector<double> 
 
     for(int i=0;i<N;i++){
         P[N*i+i]=1;
-        x[i]=X[i];
-        n2X+=X[i]*X[i];
+        x[i]=S[i];
+        n2S+=S[i]*S[i];
         g[i]=G[i];
         n2G+=G[i]*G[i];
     }
 
-    cblas_dsyr(CblasRowMajor,CblasUpper, N, -1./n2X, x, 1, P, N);
+    cblas_dsyr(CblasRowMajor,CblasUpper, N, -1./n2S, x, 1, P, N);
 
 //( __Order, __TransA, __TransB, __M, __N, __K, __alpha, *__A, __lda, *__B, __ldb, __beta, *__C, __ldc)
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, N, N, N, 1.0, HH, N, P, N, 0., HP, N);
@@ -86,6 +86,10 @@ void Evaluate_eigenvalues(vector<double> &H, vector<double> &DH, vector<double> 
 
 
     n2G=sqrt(n2G);
+
+    if(W.size()<N) { W.resize(N,0); }
+    if(VW.size()<N) { VW.resize(N,0); }
+
 
     for(int i = 0; i < N; i++) {
         
