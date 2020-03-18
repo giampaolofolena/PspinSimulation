@@ -12,14 +12,13 @@ struct variables {
     vector<double> RPG0,RPG1;
     vector<double> CG0,CG1,RCG0,RCG1;
 
-	#ifdef LAPACKEE
-	fout2=fopen(fname2,"a");
+	/*#ifdef LAPACKEE
 	double *Hc;
 	Hc = (double *) calloc(N*N, sizeof(double));
     double *wc = (double *) calloc(N,sizeof(double));
     double *S2c = (double *) calloc(N,sizeof(double));
     double *mE0c = (double *) calloc(N,sizeof(double));
-	#endif
+	#endif*/
 
     //default_random_engine (seedX);
 
@@ -43,8 +42,8 @@ struct variables {
     vector<double> H1,H2,H3; //H1(N),H2(N),DH(N);
     vector<double> P;
 
-    vector<double> mE0;	//mE0(N,1.);
-    vector<double> mE1; //mE1(N,1.);
+    vector<double> Ei;	//mE0(N,1.);
+    vector<double> gEi; //mE1(N,1.);
 
     /*double eigen0,eigen00,eigen1,eigen11;
 	double DirLaloux,DirS,DirS0,NPG;

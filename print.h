@@ -44,7 +44,7 @@ void Print_Eigen(variables *v, parameters *p) {
 	int N=p->N;
 	fprintf(p->fout2, "%12.11f %12.11f %12.11f ",v->Time,v->E1/N,v->Mu1/N);
     for(int i = 0; i < N; i++) {
-      	fprintf(p->fout2, "%12.11f %12.11f ",v->mE0[i],fabs(v->mE1[i]));
+      	fprintf(p->fout2, "%12.11f %12.11f ",v->Ei[i],fabs(v->gEi[i]));
     }
     fprintf(p->fout2, "\n");
 }

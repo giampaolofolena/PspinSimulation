@@ -16,7 +16,7 @@ void SnapVector(vector<double> V, char *fname) {
 void SaveVector(variables *v, parameters *p, vector<double> V) {
 
     char Vsave[200];
-    sprintf(Vsave,"%s/En%g.v",p->dir,v->E2);
+    sprintf(Vsave,"%s/En%lf.v",p->dir,v->E2/p->N);
 
     FILE *pFile;
     pFile = fopen (Vsave, "wb");
@@ -53,7 +53,7 @@ vector<double> OpenVector(int N,char *fname) {
 void SaveSystem(variables *v, parameters *p) {
 
     char Ssave[200];
-    sprintf(Ssave,"%s/En%g.sy",p->dir,v->E2);
+    sprintf(Ssave,"%s/En%lfFUC.sy",p->dir,v->E2/p->N);
 
     FILE *pFile;
     pFile = fopen (Ssave, "w");
@@ -76,13 +76,15 @@ void SaveSystem(variables *v, parameters *p) {
 
     fprintf(pFile,"TVel %lf\n",p->TVel);
 
+    fprintf(pFile,"discreteJ2 %d\n",p->discreteJ2);
+    fprintf(pFile,"discreteJ3 %d\n",p->discreteJ3);
+
+    fprintf(pFile,"dilution %d\n",p->dilution);
+
     fprintf(pFile,"alpha0 %lf\n",p->alpha0);
     fprintf(pFile,"alpha0_CG %lf\n",p->alpha0_CG);
 
     fprintf(pFile,"PGPGpar %lf\n",p->PGPGpar);
-
-    fprintf(pFile,"dilute %c\n",p->dilute);
-
 
    fclose (pFile);
 }
@@ -97,11 +99,12 @@ void OpenSystem(variables *v, parameters *p, char *fname) {
     printf("OPENING SYSTEM %s\n",fname);
 
     char op[120];
+    int b;
 
-    fscanf(pFile,"%s %lf\n",op, &p->a2);   if(strcmp(op,"a2")) { cout << "ERROR: not a2 "; }
-    fscanf(pFile,"%s %lf\n",op, &p->a3);   if(strcmp(op,"a3")) { cout << "ERROR: not a3 "; }
+    fscanf(pFile,"%s %lf\n",op,&p->a2);   if(strcmp(op,"a2")) { cout << "ERROR: not a2 "; }
+    fscanf(pFile,"%s %lf\n",op,&p->a3);   if(strcmp(op,"a3")) { cout << "ERROR: not a3 "; }
 
-    fscanf(pFile,"%s %d\n",op, &p->N);    if(strcmp(op,"N")) { cout << "ERROR: not N "; p->sqrtN = p->N; }
+    fscanf(pFile,"%s %d\n",op,&p->N);    if(strcmp(op,"N")) { cout << "ERROR: not N "; p->sqrtN = p->N; }
 
     fscanf(pFile,"%s %d\n",op,&p->seedJ);    if(strcmp(op,"seedJ")) { cout << "ERROR: not seedJ "; }
     fscanf(pFile,"%s %d\n",op,&p->seedS);    if(strcmp(op,"seedS")) { cout << "ERROR: not seedS "; }
@@ -116,12 +119,15 @@ void OpenSystem(variables *v, parameters *p, char *fname) {
 
     fscanf(pFile,"%s %lf\n",op,&p->TVel);     if(strcmp(op,"TVel")) { cout << "ERROR: not TVel "; }
 
+    fscanf(pFile,"%s %d\n",op,&b);  p->discreteJ2=b;  if(strcmp(op,"discreteJ2")) { cout << "ERROR: not discreteJ2 "; }
+    fscanf(pFile,"%s %d\n",op,&b);  p->discreteJ3=b;  if(strcmp(op,"discreteJ3")) { cout << "ERROR: not discreteJ3 "; }
+
+    fscanf(pFile,"%s %d\n",op,&p->dilution);  if(strcmp(op,"dilution")) { cout << "ERROR: not dilution "; }
+
     fscanf(pFile,"%s %lf\n",op,&p->alpha0);    if(strcmp(op,"alpha0")) { cout << "ERROR: not alpha0 "; }
     fscanf(pFile,"%s %lf\n",op,&p->alpha0_CG); if(strcmp(op,"alpha0_CG")) { cout << "ERROR: not alpha0_CG "; }
 
     fscanf(pFile,"%s %lf\n",op,&p->PGPGpar);   if(strcmp(op,"PGPGpar")) { cout << "ERROR: not PGPGpar "; }
-
-    fscanf(pFile,"%s %c\n",op,&p->dilute);   if(strcmp(op,"dilute")) { cout << "ERROR: not dilute "; }
 
     fclose (pFile);
 }

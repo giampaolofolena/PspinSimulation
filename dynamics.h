@@ -77,7 +77,7 @@ vector<double> CG_Step(vector<double> S1, vector<double> PG1, variables *v, para
 	return RotateVector(S1,v->CG1,v->alphaCG);
 }
 
-void DAFARE(variables *p, parameters *v) {
+/*void DAFARE(variables *p, parameters *v) {
 
 		#ifdef HESSIAN
 		H2 = Lin(a2,Hessian(2,J2,S2),a3,Hessian(3,J3,S2));		
@@ -100,4 +100,4 @@ void DAFARE(variables *p, parameters *v) {
     	Evaluate_eigenvalues(H2,DH,S1,PG1,N,mE0,mE1);
 		Print_Eigen(&PAR, &VAR);
 		#endif
-}
+}*/

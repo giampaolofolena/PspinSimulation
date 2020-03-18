@@ -15,6 +15,11 @@ vector<double> Total_Gradient(vector<double> S1, variables *v, parameters *p) {
 	return Lin(p->a2,Gradient(2,v->J2,S1),p->a3,Gradient(3,v->J3,S1));
 }
 
+vector<double> Total_Hessian(vector<double> S1, variables *v, parameters *p) {
+
+	return Lin(p->a2,Hessian(2,v->J2,S1),p->a3,Hessian(3,v->J3,S1));
+}
+
 vector<double> Total_Projected_Gradient(vector<double> S1, variables *v, parameters *p) {
 
 	v->G1 = Lin(p->a2,Gradient(2,v->J2,S1),p->a3,Gradient(3,v->J3,S1));
