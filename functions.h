@@ -458,7 +458,7 @@ void Initialize_Dilute_J(int p, vector<struct node> &J, int seedJ, int N, double
     }
 
     //cout << "REPETITIONS: " << rep << endl;
-    cout << "#Interactions: " << nj << ' ' << NJ << endl;
+    cout << "#" << p << "-Interactions: " << nj << ' ' << NJ << endl;
 
     RenormalizeNodes(J,norm2,N/2.);
 }
@@ -896,6 +896,29 @@ vector<double> HProj(vector<double> &H, vector<double> &P, int N) {
     }*/
 }
 
+vector<double> ProjVec(vector<double> &V, vector<double> &S) {
+	int N = V.size();
+    vector<double> PV(N,0.);
+	double mu = -Prod(S,V);
+
+ 	return Lin(1.,V,mu/N,S);
+}
+
+vector<double> Multiply(vector<double> &H, vector<double> &V) {
+	int N = V.size();
+    vector<double> HV(N,0.);
+
+    int i,k;
+
+	for(i=0;i<N;i++){
+        for(k=0;k<N;k++){
+            
+            HV[i] += H[N*i+k]*V[k];
+        }
+    }
+    return HV;
+}
+
 double MinEigen(vector<double> &H, vector<double> &P, vector<double> &mE, double HighestEigenValue, double err) {
 
     //using namespace Eigen;
@@ -1029,70 +1052,3 @@ vector<double> NewConjugateGradient(vector<double> PG1, vector<double> RPG0, vec
 
     return CG1;
 }
-
-double Select_CG_angle(vector<double> S, vector<double> CG, double a2, vector<struct node> &J2, double a3, vector<struct node> &J3,double alpha_max){
-
-    vector<double> S2;
-    double normCG = sqrt(Norm2(CG));
-
-    double invphi2 = 0.6180339887498949; //(sqrt(5) - 1) / 2;                                                                                                              
-    double invphi = 1-invphi2;         //           0.3819660112501051
-
-    //Given a function f with a single local minimum in                                                                                                       
-    //the interval [a,b], gss returns a subset interval                                                                                                       
-    //[c,d] that contains the minimum with d-c <= tol.                                                                                               
-
-    double tol = normCG/1000.; //1e-4;
-    //printf("tol%e %f ",tol,normCG);
-
-    double a,b,c,d,h,ya,yb,yc,yd;
-    int n,k;
-
-    a=0;
-    b=alpha_max/invphi2;
-
-    h = b - a;
-
-    c = a + invphi * h;
-    d = a + invphi2 * h;
-
-    S2 = RotateVector(S,CG,c);
-    yc = a2*Energy(2,J2,S2)+a3*Energy(3,J3,S2);
-    
-    S2 = RotateVector(S,CG,d);
-    yd = a2*Energy(2,J2,S2)+a3*Energy(3,J3,S2);
-
-    //printf("3s %f \n",Norm2(Ss->Rx,Ss->N));
-
-    k=0;
-
-    while(h>tol) {
-        if (yc > yd) {
-            a = c;
-            ya = yc;
-            c = d;
-            yc = yd;
-            h = b - a;
-            d = b - invphi * h;
-
-            S2 = RotateVector(S,CG,d);
-            yd = a2*Energy(2,J2,S2)+a3*Energy(3,J3,S2);
-        }
-        else {
-            b = d;
-            yb = yd;
-            d = c;
-            yd = yc;
-            h = b - a;
-            c = a + invphi * h;
-
-            S2 = RotateVector(S,CG,c);
-            yc = a2*Energy(2,J2,S2)+a3*Energy(3,J3,S2);
-        }
-
-        k++;
-    }
-
-    if (yc > yd) { return d; } else { return c; }
-}
-

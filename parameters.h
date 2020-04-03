@@ -5,6 +5,7 @@ struct parameters {
 	double a2,a3;
 
 	double DT0;
+	double ITime;
 	double TTime;
 
 	int N;
@@ -20,6 +21,8 @@ struct parameters {
 	double alpha0;
 	double alpha0_CG;
 	double PGPGpar;
+
+	char potential;
 
 	int seedJ;
 	int seedS;
@@ -43,6 +46,11 @@ struct parameters {
 	char dir[120];
 
 	double D2,D3,D4;
+
+
+    double (*TotEN)(vector<double> S1, variables *v, parameters *p);
+    vector<double> (*TotProjGR)(vector<double> S1, variables *v, parameters *p);
+
 };
 
 void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters *p) {
@@ -57,6 +65,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 	p->sqrtN = sqrt(p->N);
 
 	p->DT0 = 0.01;
+	p->ITime = 0;
 	p->TTime = 10000;
 	
 	p->Beta = 0.;
@@ -67,7 +76,9 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 	p->Tfin = 0;
 	p->TVel = 0;
 
-	p->PGPGpar=0.999995;
+	p->PGPGpar = 0.999995;
+
+	p->potential = 'e';
 
 	p->discreteJ2 = false;
 	p->discreteJ3 = true;
@@ -95,7 +106,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 
     printf("to see input parameters look at input.h!\n");
 
-    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:i:p:H:")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
+    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:i:s:P:d:H:t")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
     switch (c)
       {
       case 'N': //NUMBER OF SPINS
@@ -146,7 +157,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
         break;
       case 't': //Total Time
         cvalue = optarg;
-        p->TTime=atof(cvalue);
+        p->ITime=atof(cvalue);
         break;
       case '2': //weight ot the 2-spin coplings
         cvalue = optarg;
@@ -160,13 +171,17 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
         cvalue = optarg;
         sprintf(p->finitial,"%s",cvalue);
         break;
-	  case 'p': //system parameters from file
+	  case 's': //system parameters from file
         cvalue = optarg;
         sprintf(p->fpar,"%s",cvalue);
         break;
+	  case 'P': //system parameters from file
+        cvalue = optarg;
+        p->potential = *cvalue;
+        break;
       case 'd': //discrete interactions
         cvalue = optarg;
-        p->discreteJ3 = *cvalue;
+        p->discreteJ3 = (bool)*cvalue;
         break;
       case 'H': //Hessian
         cvalue = optarg;
@@ -185,6 +200,10 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 		p->Tfin = p->Temp;
 		p->TVel = 0.;
 	}
+
+	if(p->potential=='e') { p->TotEN = Total_Energy; p->TotProjGR = Total_Projected_Gradient; cout << "HAMILTONIAN dynamics" << endl; } 
+	else if (p->potential=='w') { p->TotEN = Total_Energy_W; p->TotProjGR = Total_Projected_Gradient_W; cout << "SADDLE-POTENTIAL dynamics" << endl; }
+	else { cout << "NO POTENTIAL DEFINED" << endl; }
 
 	// OPEN CONFIGURATION FROM FILE AND IF IT EXISTS OPEN FILE SYSTEM PARAMETERS
 	if(strcmp(p->finitial,"none")) { 
@@ -212,10 +231,10 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 
 	
 	if(!strcmp(p->finitial,"none")) {
-		sprintf(p->fname,"%s/%s_T%g_Tp%g_S%d_X%d.dat",p->dir,p->method,p->Temp,1./p->Beta,p->seedS,p->seedX);
+		sprintf(p->fname,"%s/%s_T%g_Tp%g_S%d_X%d_%c.dat",p->dir,p->method,p->Temp,1./p->Beta,p->seedS,p->seedX,p->potential);
 		p->fout=fopen(p->fname,"a");
 	} else {
-		sprintf(p->fname,"%s_%s.dat",p->finitial,p->method);
+		sprintf(p->fname,"%s_%s%c.dat",p->finitial,p->method,p->potential);
 		p->fout=fopen(p->fname,"w");
 	}
 

@@ -9,6 +9,7 @@ struct variables {
     vector<double> S1,S2,S0,Stemp1,S3;
     vector<double> G1;
     vector<double> PG0,PG1,PG2;
+    vector<double> TPG;
     vector<double> RPG0,RPG1;
     vector<double> CG0,CG1,RCG0,RCG1;
 

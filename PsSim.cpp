@@ -10,8 +10,8 @@
 
 #include <sys/stat.h>
 
-//#define LAPACKEE
-//gpf$ g++ -o HH /usr/local/opt/lapack/lib/liblapacke.dylib Horst_Holger.cpp -I/usr/local/opt/lapack/include -I/usr/local/opt/openblas/include -llapack -lcblas
+#define LAPACKEE
+//gpf$ g++ -o Ei /usr/local/opt/lapack/lib/liblapacke.dylib PsSim.cpp -I/usr/local/opt/lapack/include -I/usr/local/opt/openblas/include -llapack -lcblas
 
 using namespace std;
 
@@ -58,8 +58,10 @@ int main(int argc, char *argv[]){
 	fprintf(p.fout,"# a2 = %f a3 = %f D2 = %f D3 = %f seedJ = %d seedS = %d seedX = %d\n", p.a2,p.a3,p.D2,p.D3,p.seedJ,p.seedS,p.seedX);
 
 	v.S1 = Initialize_System(&v,&p);
-	v.E1 = Total_Energy(v.S1,&v,&p);
-	v.PG1 = Total_Projected_Gradient(v.S1,&v,&p);
+
+
+	v.E1 = p.TotEN(v.S1,&v,&p);
+	v.PG1 = p.TotProjGR(v.S1,&v,&p);
 
 	if(!strcmp(p.method,"GD")) {
 		Initialize_GD(&v, &p);
@@ -69,11 +71,24 @@ int main(int argc, char *argv[]){
 		Initialize_CG(&v, &p);
 	}
 
+	//v.E2=v.E1; SaveSystem(&v,&p); getchar();
+
+
 	v.T = p.Tin;
 	int k=1;
 	v.S3=v.S1;
 
-	for(int t=0;v.Time<p.TTime;t++) {
+	if(p.HessianEi=='o') {
+		#ifdef LAPACKEE
+		v.H1=Total_Hessian(v.S1,&v,&p);
+		Evaluate_eigenvalues(v.H1, v.G1, v.S1, p.N, v.Ei, v.gEi);
+		Print_Eigen(&v,&p);
+		#else
+		printf("LAPACKEE not activated\n");
+		#endif
+	} else {
+
+	for(int t=p.ITime;v.Time<(p.ITime+p.TTime);t++) {
 
 		if(!strcmp(p.method,"GD")) {
 
@@ -94,8 +109,8 @@ int main(int argc, char *argv[]){
 			v.S2 = CG_Step(v.S1,v.PG1,&v,&p);
 		}
 
-		v.PG2 = Total_Projected_Gradient(v.S2,&v,&p);
-		v.E2 = Total_Energy(v.S2,&v,&p);
+		v.E2 = p.TotEN(v.S2,&v,&p);
+		v.PG2 = p.TotProjGR(v.S2,&v,&p);
 
 		v.Time += v.DTime;
         //v.NormPG = sqrt(Norm2(v.PG1));
@@ -107,20 +122,21 @@ int main(int argc, char *argv[]){
 		Evaluate_Observables(&v, &p);
 		Print_Observables(&v, &p);
 
-		v.E0=v.E1; 
+		v.E0=v.E1;
 
 		v.S1=v.S2; v.E1=v.E2; v.PG1=v.PG2; v.NPG1=v.NPG2;
 
 		v.CG0=v.CG1; v.H1=v.H2; v.RPG0=v.RPG1; v.RCG0=v.RCG1;
 
-		if(t%1000==0) { char fname[400]; sprintf(fname,"%s/time%d_%f.v",p.dir,t,v.Time); 
-SnapVector(v.S1,fname); /*printf(fname,"Write file time%d_%f.v",time,v.Time);*/ }
+		if(t%50==0) { char fname[400]; sprintf(fname,"%s/time%d_%f.v",p.dir,t,v.Time); 
+		SnapVector(v.S1,fname); /*printf(fname,"Write file time%d_%f.v",time,v.Time);*/ }
 
-	}   
+	}
 	fprintf(p.fout, "\n");
 
 	SaveSystem(&v,&p); 
 	SaveVector(&v,&p,v.S1);
+	}	
 
     return 0; 
 }

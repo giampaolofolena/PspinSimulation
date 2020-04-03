@@ -16,7 +16,7 @@ void SnapVector(vector<double> V, char *fname) {
 void SaveVector(variables *v, parameters *p, vector<double> V) {
 
     char Vsave[200];
-    sprintf(Vsave,"%s/En%lf.v",p->dir,v->E2/p->N);
+    sprintf(Vsave,"%s/En%1.12f.v",p->dir,v->E2/p->N);
 
     FILE *pFile;
     pFile = fopen (Vsave, "wb");
@@ -53,7 +53,7 @@ vector<double> OpenVector(int N,char *fname) {
 void SaveSystem(variables *v, parameters *p) {
 
     char Ssave[200];
-    sprintf(Ssave,"%s/En%lfFUC.sy",p->dir,v->E2/p->N);
+    sprintf(Ssave,"%s/En%1.12f.sy",p->dir,v->E2/p->N);
 
     FILE *pFile;
     pFile = fopen (Ssave, "w");
@@ -72,6 +72,7 @@ void SaveSystem(variables *v, parameters *p) {
     fprintf(pFile,"Beta %lf\n",p->Beta);
 
     fprintf(pFile,"DT0 %lf\n",p->DT0);
+    fprintf(pFile,"ITime %lf\n",v->Time);
     fprintf(pFile,"TTime %lf\n",p->TTime);
 
     fprintf(pFile,"TVel %lf\n",p->TVel);
@@ -115,6 +116,7 @@ void OpenSystem(variables *v, parameters *p, char *fname) {
     fscanf(pFile,"%s %lf\n",op,&p->Beta);     if(strcmp(op,"Beta")) { cout << "ERROR: not Beta "; }
 
     fscanf(pFile,"%s %lf\n",op,&p->DT0);      if(strcmp(op,"DT0")) { cout << "ERROR: not DT0 "; }
+    fscanf(pFile,"%s %lf\n",op,&p->ITime);    if(strcmp(op,"ITime")) { cout << "ERROR: not ITime "; }
     fscanf(pFile,"%s %lf\n",op,&p->TTime);    if(strcmp(op,"TTime")) { cout << "ERROR: not TTime "; }
 
     fscanf(pFile,"%s %lf\n",op,&p->TVel);     if(strcmp(op,"TVel")) { cout << "ERROR: not TVel "; }

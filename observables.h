@@ -10,6 +10,12 @@ double Total_Energy(vector<double> S1, variables *v, parameters *p) {
 	return p->a2*v->e2+p->a3*v->e3;
 }
 
+double Total_Energy_W(vector<double> S1, variables *v, parameters *p) {
+
+	v->TPG = Total_Projected_Gradient(S1,v,p);
+	return Norm2(v->PG1);
+}
+
 vector<double> Total_Gradient(vector<double> S1, variables *v, parameters *p) {
 
 	return Lin(p->a2,Gradient(2,v->J2,S1),p->a3,Gradient(3,v->J3,S1));
@@ -22,9 +28,18 @@ vector<double> Total_Hessian(vector<double> S1, variables *v, parameters *p) {
 
 vector<double> Total_Projected_Gradient(vector<double> S1, variables *v, parameters *p) {
 
-	v->G1 = Lin(p->a2,Gradient(2,v->J2,S1),p->a3,Gradient(3,v->J3,S1));
+	v->G1 = Total_Gradient(S1,v,p);
 	v->Mu1 = -Prod(S1,v->G1);
 
+	return Lin(1.,v->G1,v->Mu1/p->N,S1);
+}
+
+vector<double> Total_Projected_Gradient_W(vector<double> S1, variables *v, parameters *p) {
+
+	v->H2 = Total_Hessian(S1,v,p);
+	v->G1 = Multiply(v->H2,v->TPG);
+	v->Mu1 = -Prod(S1,v->G1);
+	
 	return Lin(1.,v->G1,v->Mu1/p->N,S1);
 }
 

@@ -15,10 +15,15 @@ void Print_Initial_Observables(variables *v, parameters *p) {
 	#endif
 
 	int N=p->N;
+
+    double Ene,Mu;
+	if(p->potential=='e') { Ene = v->E1/N; Mu = v->Mu1/N; } 
+	else { Ene = Total_Energy(v->S1,v,p)/N; v->G1 = Total_Gradient(v->S1,v,p); Mu = -Prod(v->S1,v->G1)/N; }
+
 	fprintf(p->fout, "%12.11f ",v->Time);
 	fprintf(p->fout, "%12.11f ",v->q12/N);
-	fprintf(p->fout, "%12.11f ",v->E1/N);
-	fprintf(p->fout, "%12.11f ",v->Mu1/N);
+	fprintf(p->fout, "%12.11f ",Ene);
+	fprintf(p->fout, "%12.11f ",Mu);
 	fprintf(p->fout, "%12.11f ",sqrt(v->NPG1/N));
 	fprintf(p->fout, "%12.11f ",v->alpha);
 	fprintf(p->fout, "%12.11f ",v->T);
@@ -31,8 +36,27 @@ void Print_Initial_Observables(variables *v, parameters *p) {
 }
 
 void Print_Observables(variables *v, parameters *p) {
+
 	int N=p->N;
-	fprintf(p->fout, "%12.11f %12.11f %12.11f %12.11f %12.11f %12.11f %12.11f %12.11f ",v->Time,v->q12/N,v->E2/N,v->Mu1/N,sqrt(v->NPG2/N),v->e2/N,v->alpha,v->T);
+
+    double Ene,Mu;
+	if(p->potential=='e') { Ene = v->E2/N; Mu = v->Mu1/N; } 
+	else { Ene = Total_Energy(v->S2,v,p)/N; v->G1 = Total_Gradient(v->S1,v,p); Mu = -Prod(v->S1,v->G1)/N; }
+
+	fprintf(p->fout, "%12.11f ",v->Time);
+	fprintf(p->fout, "%12.11f ",v->q12/N);
+	fprintf(p->fout, "%12.11f ",Ene);
+	fprintf(p->fout, "%12.11f ",Mu);
+	fprintf(p->fout, "%12.11f ",sqrt(v->NPG1/N));
+	fprintf(p->fout, "%12.11f ",v->e2/N);
+	fprintf(p->fout, "%12.11f ",v->alpha);
+	fprintf(p->fout, "%12.11f ",v->T);
+
+	if(p->potential!='e') {
+		fprintf(p->fout, "%12.11f ",v->E2/N);
+		fprintf(p->fout, "%12.11f ",v->Mu1/N);
+	}
+
 	#ifdef HESSIAN
 	fprintf(p->fout, "%12.11f %12.11f %12.11f %12.11f %12.11f\n",v->eigen00,v->eigen11,v->DirLaloux,v->DirS,v->DirS0);
 	#else

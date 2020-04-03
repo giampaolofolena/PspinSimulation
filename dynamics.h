@@ -67,7 +67,7 @@ vector<double> CG_Step(vector<double> S1, vector<double> PG1, variables *v, para
         	//v->alpha*=0.9;
 	}
 
-	v->alphaCG = Select_CG_angle(S1,v->CG1,p->a2,v->J2,p->a3,v->J3,v->alphaCG*1.25);
+	v->alphaCG = Select_CG_angle(S1,v->CG1,v->alphaCG*1.25,v,p);
 
 	v->RPG1 = RotateGeneralVector(PG1,S1,v->CG1,v->alphaCG);
 	v->RCG1 = RotateGeneralVector(v->CG1,S1,v->CG1,v->alphaCG);
@@ -76,6 +76,74 @@ vector<double> CG_Step(vector<double> S1, vector<double> PG1, variables *v, para
 
 	return RotateVector(S1,v->CG1,v->alphaCG);
 }
+
+double Select_CG_angle(vector<double> S, vector<double> CG, double alpha_max, variables *v, parameters *p){
+
+    vector<double> S2;
+    double normCG = sqrt(Norm2(CG));
+
+    double invphi2 = 0.6180339887498949; //(sqrt(5) - 1) / 2;                                                                                                              
+    double invphi = 1-invphi2;         //           0.3819660112501051
+
+    //Given a function f with a single local minimum in                                                                                                       
+    //the interval [a,b], gss returns a subset interval                                                                                                       
+    //[c,d] that contains the minimum with d-c <= tol.                                                                                               
+
+    double tol = normCG/1000.; //1e-4;
+    //printf("tol%e %f ",tol,normCG);
+
+    double a,b,c,d,h,ya,yb,yc,yd;
+    int n,k;
+
+    a=0;
+    b=alpha_max/invphi2;
+
+    h = b - a;
+
+    c = a + invphi * h;
+    d = a + invphi2 * h;
+
+    S2 = RotateVector(S,CG,c);
+    yc = p->TotEN(S,v,p);
+    
+    S2 = RotateVector(S,CG,d);
+    yd = p->TotEN(S,v,p);
+
+    //printf("3s %f \n",Norm2(Ss->Rx,Ss->N));
+
+    k=0;
+
+    while(h>tol) {
+        if (yc > yd) {
+            a = c;
+            ya = yc;
+            c = d;
+            yc = yd;
+            h = b - a;
+            d = b - invphi * h;
+
+            S2 = RotateVector(S,CG,d);
+            yd = p->TotEN(S,v,p);
+        }
+        else {
+            b = d;
+            yb = yd;
+            d = c;
+            yd = yc;
+            h = b - a;
+            c = a + invphi * h;
+
+            S2 = RotateVector(S,CG,c);
+            yc = p->TotEN(S,v,p);
+        }
+
+        k++;
+    }
+
+    if (yc > yd) { return d; } else { return c; }
+}
+
+
 
 /*void DAFARE(variables *p, parameters *v) {
 
