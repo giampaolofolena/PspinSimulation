@@ -2,7 +2,7 @@
 
 This program simulate the p-spin spherical model:
 
-<img src="https://render.githubusercontent.com/render/math?math= H[s]=J^{ijk}s_is_js_k + J^{ijkl}s_is_js_ks_l \qquad$ s.t. $\quad s^is_i=N">
+<img src="https://render.githubusercontent.com/render/math?math= H[s]=J^{ijk}s_is_js_k + J^{ijkl}s_is_js_ks_l \qquad \text{s.t.} \quad s^is_i=N">
 
 ## Installation
 
