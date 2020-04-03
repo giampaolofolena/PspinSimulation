@@ -35,9 +35,9 @@ struct parameters {
 	int dilution;
 	char HessianEi;
 
-	FILE *fout,*fout2;
+	FILE *fout,*foutEi;
 	char fname[200];
-	char fname2[200];
+	char fnameEi[200];
 
 	FILE *fin;
 	char finitial[200];
@@ -238,10 +238,14 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 		p->fout=fopen(p->fname,"w");
 	}
 
+	if (p->fout == NULL) {
+    	perror("Failed");
+	}
+
 	if(p->HessianEi!='n') {
 	#ifdef LAPACKEE
-	sprintf(p->fname2,"%s/%seigen_T%g_Tp%g_sS%d_sX%d.dat",p->dir,p->method,p->Temp,1./p->Beta,p->seedS,p->seedX);  
-    p->fout2=fopen(p->fname2,"w");
+	sprintf(p->fnameEi,"%s.eigen",p->fname);  
+    p->foutEi=fopen(p->fnameEi,"w");
     #else
     printf("LAPACKEE not activated\n");
     #endif

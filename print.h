@@ -66,11 +66,11 @@ void Print_Observables(variables *v, parameters *p) {
 
 void Print_Eigen(variables *v, parameters *p) {
 	int N=p->N;
-	fprintf(p->fout2, "%12.11f %12.11f %12.11f ",v->Time,v->E1/N,v->Mu1/N);
+	fprintf(p->foutEi, "#%12.11f %12.11f %12.11f\n",v->Time,v->E1/N,v->Mu1/N);
     for(int i = 0; i < N; i++) {
-      	fprintf(p->fout2, "%12.11f %12.11f ",v->Ei[i],fabs(v->gEi[i]));
+      	fprintf(p->foutEi, "%12.11f %12.11f\n",v->Ei[i],fabs(v->gEi[i]));
     }
-    fprintf(p->fout2, "\n");
+    fprintf(p->foutEi, "\n");
 }
 
 void Print_Vector(vector<double> V) {

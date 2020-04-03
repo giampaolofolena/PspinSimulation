@@ -38,7 +38,7 @@ vector<double> OpenVector(int N,char *fname) {
     
 
         int result = fread (&X[0],sizeof(double),N,fo);
-        if (result != N) {fputs ("Reading error",stderr); exit (3);}
+        if (result != N) {fputs ("Error OpenVector: the input vector is of the right length",stderr); exit (3);}
 
         fclose(fo);
 

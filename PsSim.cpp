@@ -55,8 +55,8 @@ int main(int argc, char *argv[]){
     p.fout2=stdout;
 	#endif
 
-	fprintf(p.fout,"# a2 = %f a3 = %f D2 = %f D3 = %f seedJ = %d seedS = %d seedX = %d\n", p.a2,p.a3,p.D2,p.D3,p.seedJ,p.seedS,p.seedX);
-
+	fprintf(p.fout,"# a2 = %f a3 = %f D2 = %f D3 = %f seedJ = %d seedS = %d seedX = %d\n", p.a2,p.a3,p.D2,p.D3,p.seedJ,p.seedS,p.seedX); 
+	
 	v.S1 = Initialize_System(&v,&p);
 
 
