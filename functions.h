@@ -6,9 +6,12 @@ double Sandwich(vector<double> &M, vector<double> &A);
 double DoubleSandwich(vector<double> &A, vector<double> &M, vector<double> &B);
 
 #ifdef LAPACKEE
+//#include <mkl.h> ///it requires the link flag -llapack
 //#include "/usr/include/gsl/gsl_cblas.h"  /// NEL CASO DI MAC metti solo "cblas.h" requires the link flag -lcblas
-#include "cblas.h"
-#include "lapacke.h" ///it requires the link flag -llapack
+//#include <cblas.h>
+#include <cblas.h>
+#include <lapacke.h>
+
 
 /*vector<double> FirstOrderEigenPert(vector<double> H, vector<double> L) {
     
@@ -75,7 +78,7 @@ void Evaluate_eigenvalues(vector<double> &H, vector<double> G, vector<double> S,
     int lda = N;
 
     // Solve eigenproblem 
-    info = LAPACKE_dsyev( LAPACK_COL_MAJOR, 'V', 'U', N, HH, lda, w );
+    info = LAPACKE_dsyev(LAPACK_COL_MAJOR, 'V', 'U', N, HH, lda, w );
     // Check for convergence 
     if( info > 0 ) {
         printf( "The algorithm failed to compute eigenvalues.\n" );

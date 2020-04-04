@@ -73,6 +73,14 @@ void Print_Eigen(variables *v, parameters *p) {
     fprintf(p->foutEi, "\n");
 }
 
+void Print_Eigenvalues(vector<double> Ei, vector<double> gEi, FILE *fname) {
+	int N=Ei.size();
+    for(int i = 0; i < N; i++) {
+      	fprintf(fname, "%12.11f %12.11f\n",Ei[i],fabs(gEi[i]));
+    }
+    fprintf(fname, "\n");
+}
+
 void Print_Vector(vector<double> V) {
 	printf("SIZE %d\n",V.size());
     for(int i = 0; i < 30; i++) {

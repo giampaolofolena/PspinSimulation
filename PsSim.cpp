@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 
 #define LAPACKEE
-//gpf$ g++ -o Ei /usr/local/opt/lapack/lib/liblapacke.dylib PsSim.cpp -I/usr/local/opt/lapack/include -I/usr/local/opt/openblas/include -llapack -lcblas
+//gpf$ g++ -o Ei -llapacke -lcblas
 
 using namespace std;
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]){
 	#endif
 
 	fprintf(p.fout,"# a2 = %f a3 = %f D2 = %f D3 = %f seedJ = %d seedS = %d seedX = %d\n", p.a2,p.a3,p.D2,p.D3,p.seedJ,p.seedS,p.seedX); 
-	
+
 	v.S1 = Initialize_System(&v,&p);
 
 
@@ -79,11 +79,20 @@ int main(int argc, char *argv[]){
 	v.S3=v.S1;
 
 	if(p.HessianEi=='o') {
-		#ifdef LAPACKEE
+
 		v.H1=Total_Hessian(v.S1,&v,&p);
+		#ifdef LAPACKEE
 		Evaluate_eigenvalues(v.H1, v.G1, v.S1, p.N, v.Ei, v.gEi);
-		Print_Eigen(&v,&p);
+		Print_Eigenvalues(v.Ei, v.gEi, p.foutEi);
 		#else
+		char fname[400]; 
+		sprintf(fname,"%s.hessian",p.finitial); SnapVector(v.H1,fname);
+		sprintf(fname,"%s.gradient",p.finitial); SnapVector(v.G1,fname);
+		sprintf(fname,"%s.config",p.finitial); SnapVector(v.S1,fname);
+		vector<double> V(1); V[0]=v.E1;
+		sprintf(fname,"%s.energy",p.finitial); SnapVector(V,fname);
+
+
 		printf("LAPACKEE not activated\n");
 		#endif
 	} else {
