@@ -106,7 +106,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 
     printf("to see input parameters look at input.h!\n");
 
-    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:i:s:P:d:H:t")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
+    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:i:s:P:d:H:")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
     switch (c)
       {
       case 'N': //NUMBER OF SPINS
@@ -244,7 +244,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 
 	if(p->HessianEi!='n') {
 	#ifdef LAPACKEE
-	sprintf(p->fnameEi,"%s.eigen",p->fname);  
+	sprintf(p->fnameEi,"%s_eigen.dat",p->fname);
     p->foutEi=fopen(p->fnameEi,"w");
     #else
     printf("LAPACKEE not activated\n");

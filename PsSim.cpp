@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 
 #define LAPACKEE
-//gpf$ g++ -o Ei -llapacke -lcblas
+//gpf$ g++ -o Ei PsSim.cpp -llapacke -lcblas
 
 using namespace std;
 
@@ -81,10 +81,6 @@ int main(int argc, char *argv[]){
 	if(p.HessianEi=='o') {
 
 		v.H1=Total_Hessian(v.S1,&v,&p);
-		#ifdef LAPACKEE
-		Evaluate_eigenvalues(v.H1, v.G1, v.S1, p.N, v.Ei, v.gEi);
-		Print_Eigenvalues(v.Ei, v.gEi, p.foutEi);
-		#else
 		char fname[400]; 
 		sprintf(fname,"%s.hessian",p.finitial); SnapVector(v.H1,fname);
 		sprintf(fname,"%s.gradient",p.finitial); SnapVector(v.G1,fname);
@@ -92,9 +88,15 @@ int main(int argc, char *argv[]){
 		vector<double> V(1); V[0]=v.E1;
 		sprintf(fname,"%s.energy",p.finitial); SnapVector(V,fname);
 
-
+		#ifdef LAPACKEE
+		Evaluate_eigenvalues(v.H1, v.G1, v.S1, p.N, v.Ei, v.gEi);
+		Print_Eigenvalues(v.Ei, v.gEi, p.foutEi);
+		sprintf(fname,"%s.eigen",p.finitial); SnapVector(v.Ei,fname);
+		sprintf(fname,"%s.projeigen",p.finitial); SnapVector(v.gEi,fname);
+		#else
 		printf("LAPACKEE not activated\n");
 		#endif
+		
 	} else {
 
 	for(int t=p.ITime;v.Time<(p.ITime+p.TTime);t++) {
