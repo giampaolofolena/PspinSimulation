@@ -157,7 +157,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
         break;
       case 't': //Total Time
         cvalue = optarg;
-        p->ITime=atof(cvalue);
+        p->TTime=atof(cvalue);
         break;
       case '2': //weight ot the 2-spin coplings
         cvalue = optarg;

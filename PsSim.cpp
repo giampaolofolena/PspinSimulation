@@ -10,7 +10,7 @@
 
 #include <sys/stat.h>
 
-#define LAPACKEE
+//#define LAPACKEE
 //gpf$ g++ -o Ei PsSim.cpp -llapacke -lcblas
 
 using namespace std;
