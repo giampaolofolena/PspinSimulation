@@ -10,6 +10,8 @@ struct parameters {
 
 	int N;
 	double sqrtN;
+
+	int R;
 	
 	double Beta;
 	double Temp;
@@ -58,15 +60,17 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 	p->err=0.000001;
 	p->err2=pow(p->err,2);
 
-	p->a2 = 1.;
+	p->a2 = 0.;
 	p->a3 = 1.;
 
 	p->N = 1000;
 	p->sqrtN = sqrt(p->N);
 
+	p->R = 1000;
+
 	p->DT0 = 0.01;
 	p->ITime = 0;
-	p->TTime = 10000;
+	p->TTime = 200;
 	
 	p->Beta = 0.;
 	p->Temp = 0.;
@@ -106,7 +110,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 
     printf("to see input parameters look at input.h!\n");
 
-    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:i:s:P:d:H:")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
+    while ((c = getopt (Ac, Av, "N:J:S:X:b:T:I:v:F:D:c:A:M:t:2:3:i:s:P:d:H:a:")) != -1) //COLON MEANS THAT A VALUE MUST BE SPECIFIED
     switch (c)
       {
       case 'N': //NUMBER OF SPINS
@@ -187,6 +191,10 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
         cvalue = optarg;
         p->HessianEi = *cvalue;
         break;
+	  case 'a': //alpha Gradient Descent TAP
+        cvalue = optarg;
+        p->alpha0 = atof(cvalue);
+        break;
       case '?':
         fprintf (stderr,"Unknown option character %c.\n",optopt);
         getchar();
@@ -224,7 +232,6 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 	//STANDARD DILUTION
 	p->D3=p->dilution/(double)p->N;
 	p->D2=1; //ATTENZIONE: se scalo D2 come D3 va a finire ad energie molto sotto soglia? perché? meglio fissare D2=1
-
 
 	sprintf(p->dir,"P%g,2+%g,3_N%d_sJ%d_D%d",p->a2,p->a3,p->N,p->seedJ,p->dilution);
 	Create_Directory(p->dir);

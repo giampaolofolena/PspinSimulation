@@ -6,12 +6,16 @@ struct variables {
 	vector<struct node> J2; 
     vector<struct node> J3; 
 
-    vector<double> S1,S2,S0,Stemp1,S3;
+    vector<double> S1,S2,S0,Stemp1,S3,S_IS;
     vector<double> G1;
     vector<double> PG0,PG1,PG2;
     vector<double> TPG;
     vector<double> RPG0,RPG1;
     vector<double> CG0,CG1,RCG0,RCG1;
+
+    vector < vector<double> > IS;
+
+    vector<double> M;
 
 	/*#ifdef LAPACKEE
 	double *Hc;
@@ -39,6 +43,7 @@ struct variables {
     double NPG1,NPG2;
 
     double q12;
+    double q13;
 
     vector<double> H1,H2,H3; //H1(N),H2(N),DH(N);
     vector<double> P;

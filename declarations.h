@@ -28,6 +28,7 @@ vector<double> Total_Gradient(vector<double> S1, variables *v, parameters *p);
 vector<double> Total_Projected_Gradient(vector<double> S1, variables *v, parameters *p);
 vector<double> Total_Projected_Gradient_W(vector<double> S1, variables *v, parameters *p);
 vector<double> Projected_Noise(vector<double> S1, variables *v, parameters *p, double Temp);
+vector<double> Magnetization(vector<double> S1, vector<double> M, variables *v, parameters *p);
 
 //parametr.h
 void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters *p);
@@ -36,4 +37,7 @@ void Input_Parameters(int Ac, char **Av, struct variables *v, struct parameters 
 void Print_Initial_Observables(variables *v, parameters *p);
 void Print_Observables(variables *v, parameters *p);
 void Print_Eigen(variables *v, parameters *p);
+
+//
+vector<double> Find_Inherent_Structure(vector<double> S1,variables *v, parameters *p);
 

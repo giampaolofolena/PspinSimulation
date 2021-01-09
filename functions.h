@@ -25,8 +25,66 @@ double DoubleSandwich(vector<double> &A, vector<double> &M, vector<double> &B);
     }
 }*/
 
+void Evaluate_eigenvalues_TAP(vector<double> &H, vector<double> G, vector<double> S, int N, vector<double> &W, vector<double> &VW) {
+    
+    double n2S=0;
+    double n2G=0;
+    //for(int i; i<N; i++) { n2X+=X[i]*X[i]; }
+
+    double *HH,*w,*x,*g;
+    HH = (double *) calloc(N*N, sizeof(double));
+    /*L = (double *) calloc(N*N, sizeof(double));
+    dH= (double *) calloc(N*N, sizeof(double));
+    dHL= (double *) calloc(N*N, sizeof(double));*/
+    w= (double *) calloc(N, sizeof(double));
+    x= (double *) calloc(N, sizeof(double));
+    g= (double *) calloc(N, sizeof(double));
 
 
+    for(int i = 0; i < N*N; i++) {
+        HH[i]=H[i];
+    }
+
+    for(int i=0;i<N;i++){
+        //P[N*i+i]=1;
+        x[i]=S[i];
+        n2S+=S[i]*S[i];
+        g[i]=G[i];
+        n2G+=G[i]*G[i];
+    }
+
+    int info=0;
+    int lda = N;
+
+    // Solve eigenproblem 
+    info = LAPACKE_dsyev(LAPACK_COL_MAJOR, 'V', 'U', N, HH, lda, w );
+    // Check for convergence 
+    if( info > 0 ) {
+        printf( "The algorithm failed to compute eigenvalues.\n" );
+        exit( 1 );
+    }
+
+    cblas_dgemv(CblasRowMajor,CblasNoTrans,N,N,1.,HH,N,g,1,0.0000000000000001,x,1);
+
+
+    n2G=sqrt(n2G);
+
+    if(W.size()<N) { W.resize(N,0); }
+    if(VW.size()<N) { VW.resize(N,0); }
+
+
+
+    for(int i = 0; i < N; i++) {
+        
+        /*double d = 0;
+        for(int j = 0; j < N; j++) { d+=HH[N*i+j]*HH[N*i+j]; }
+        cout << d << ' '; getchar();*/
+
+        W[i] = w[i];
+        VW[i] = x[i]/n2G;
+    }
+
+}
 
 void Evaluate_eigenvalues(vector<double> &H, vector<double> G, vector<double> S, int N, vector<double> &W, vector<double> &VW) {
     
@@ -66,12 +124,13 @@ void Evaluate_eigenvalues(vector<double> &H, vector<double> G, vector<double> S,
         n2G+=G[i]*G[i];
     }
 
+    //CREATE PROJECTOR ON SPACE ORTOGONAL TO S
     cblas_dsyr(CblasRowMajor,CblasUpper, N, -1./n2S, x, 1, P, N);
 
+    //PROJECT THE HESSIAN ON THE SPACE ORTOGONAL TO S
 //( __Order, __TransA, __TransB, __M, __N, __K, __alpha, *__A, __lda, *__B, __ldb, __beta, *__C, __ldc)
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, N, N, N, 1.0, HH, N, P, N, 0., HP, N);
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, N, N, N, 1.0, P, N, HP, N, 0., HH, N);
-
 
 
     int info=0;
@@ -93,6 +152,7 @@ void Evaluate_eigenvalues(vector<double> &H, vector<double> G, vector<double> S,
     if(W.size()<N) { W.resize(N,0); }
     if(VW.size()<N) { VW.resize(N,0); }
 
+    double q=0;
 
     for(int i = 0; i < N; i++) {
         
@@ -103,6 +163,8 @@ void Evaluate_eigenvalues(vector<double> &H, vector<double> G, vector<double> S,
         W[i] = w[i];
         VW[i] = x[i]/n2G;
     }
+
+    //printf("q %f\n",q); getchar();
 
     /*for(int i = 0; i < N*N; i++) {
         L[i]=HH[i];
@@ -310,7 +372,7 @@ vector<double> RotateVector(vector<double> S, vector<double> PG, double angle) {
 
 
     double SPG = Prod(S,PG);
-    if(SPG>0.0000000001) { cout << "ERR_not_ort " << SPG << endl; }
+    if(SPG>0.000000001) { cout << "ERR_not_ort " << SPG << endl; }
 
     int N = S.size();
     vector<double> RS(N);
@@ -397,6 +459,8 @@ void RenormalizeVector(vector<double> &V, double oldVar, double newVar) {
 }
 
 void Initialize_Dilute_J(int p, vector<struct node> &J, int seedJ, int N, double D, bool discrete) {
+
+    cout << "discrete" << p << ":" << discrete << endl;
 
     mt19937 generator(seedJ);
     //uniform_real_distribution<double> unif(0,1);
@@ -1054,4 +1118,20 @@ vector<double> NewConjugateGradient(vector<double> PG1, vector<double> RPG0, vec
     }
 
     return CG1;
+}
+
+double R_TAP(double a2, double a3, double q, double beta) {
+
+    double A2=a2*a2;
+    double A3=a3*a3;
+
+    return log(1-q)-beta*beta*((A2+A3)/2.-(A2*q*q+A3*q*q*q)/2.-(1-q)*(2*A2*q+3*A3*q*q)/2.);
+}
+
+double R1_TAP(double a2, double a3, double q, double beta) {
+
+    double A2=a2*a2;
+    double A3=a3*a3;
+
+    return 1./(1-q)+beta*beta*(1-q)*(2*A2+6*A3*q)/2.;
 }

@@ -7,6 +7,7 @@ void Initialize_GD(variables *v, parameters *p) {
 
 	v->S0=v->S1;
 	v->S2=v->S1;
+
 	v->NPG1 = Norm2(v->PG1);
 
 	Evaluate_Observables(v, p);
@@ -18,7 +19,7 @@ vector<double> Langevin_step(vector<double> S1, vector<double> PG1, variables *v
 	vector<double> S2;
 	
 	if(fabs(Prod(S1,PG1))>=0.00000001) {
-        cout << "LangevinStep: NON orthogonal > SOFT STEP" << endl;
+        cout << "LangevinStep: NON orthogonal "<< fabs(Prod(S1,PG1)) << " > SOFT STEP" << endl;
         v->alpha*=0.9;
         if(p->Temp>0) {
         	S2 = SoftLangevinSTEP(S1,Sum(v->X,v->G1),v->alpha);
@@ -40,7 +41,7 @@ vector<double> Langevin_step(vector<double> S1, vector<double> PG1, variables *v
 
 void Initialize_CG(variables *v, parameters *p) {
 
-	v->alphaCG = p->alpha0_CG;
+	v->alphaCG = p->alpha0_CG*3;
 	v->Time = 0;
 	v->DTime = p->DT0;
 	v->PGPG = 1;
@@ -104,10 +105,10 @@ double Select_CG_angle(vector<double> S, vector<double> CG, double alpha_max, va
     d = a + invphi2 * h;
 
     S2 = RotateVector(S,CG,c);
-    yc = p->TotEN(S,v,p);
+    yc = p->TotEN(S2,v,p);
     
     S2 = RotateVector(S,CG,d);
-    yd = p->TotEN(S,v,p);
+    yd = p->TotEN(S2,v,p);
 
     //printf("3s %f \n",Norm2(Ss->Rx,Ss->N));
 
@@ -123,7 +124,7 @@ double Select_CG_angle(vector<double> S, vector<double> CG, double alpha_max, va
             d = b - invphi * h;
 
             S2 = RotateVector(S,CG,d);
-            yd = p->TotEN(S,v,p);
+            yd = p->TotEN(S2,v,p);
         }
         else {
             b = d;
@@ -134,7 +135,7 @@ double Select_CG_angle(vector<double> S, vector<double> CG, double alpha_max, va
             c = a + invphi * h;
 
             S2 = RotateVector(S,CG,c);
-            yc = p->TotEN(S,v,p);
+            yc = p->TotEN(S2,v,p);
         }
 
         k++;

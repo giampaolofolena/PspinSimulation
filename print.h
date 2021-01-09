@@ -27,6 +27,7 @@ void Print_Initial_Observables(variables *v, parameters *p) {
 	fprintf(p->fout, "%12.11f ",sqrt(v->NPG1/N));
 	fprintf(p->fout, "%12.11f ",v->alpha);
 	fprintf(p->fout, "%12.11f ",v->T);
+	fprintf(p->fout, "%12.11f ",v->q13/N);
 
 	#ifdef HESSIAN
 	fprintf(p->fout, "%12.11f %12.11f %12.11f %12.11f %12.11f\n",v->eigen00,v->eigen11,v->DirLaloux,v->DirS,v->DirS0);
@@ -51,6 +52,7 @@ void Print_Observables(variables *v, parameters *p) {
 	fprintf(p->fout, "%12.11f ",v->e2/N);
 	fprintf(p->fout, "%12.11f ",v->alpha);
 	fprintf(p->fout, "%12.11f ",v->T);
+	fprintf(p->fout, "%12.11f ",v->q13/N);
 
 	if(p->potential!='e') {
 		fprintf(p->fout, "%12.11f ",v->E2/N);
@@ -89,10 +91,34 @@ void Print_Vector(vector<double> V) {
     printf("\n");
 }
 
+void Print_Vector_On_File(vector<double> V, FILE *fname) {
+    for(int i = 0; i < V.size(); i++) {
+      	fprintf(fname,"%12.11f \n",V[i]);
+    }
+    fprintf(fname, "\n");
+}
+
 void Print_Couplings(vector<struct node> &J) {
 	printf("SIZE %d\n",J.size());
     for(int i = 0; i < 30; i++) {
       	printf("%12.11f ",J[i].J);
     }
     printf("\n");
+}
+
+void Print_Couplings_On_File(int p, vector<struct node> &JJ, FILE *fname) {
+
+	for(size_t i = 0; i < JJ.size(); i++) {
+        double J = JJ[i].J;
+        long long int SSS = JJ[i].SSS;
+
+        long long int mask = 0b1111111111111111;
+        double multiS = 1.;
+
+		fprintf(fname,"%12.11f ",J);
+        for(int j=0;j<p;j++) { 
+        	fprintf(fname,"%lld ",(SSS>>(16*j) & mask)); 
+        }
+        fprintf(fname,"\n");
+    }
 }

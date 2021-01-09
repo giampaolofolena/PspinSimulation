@@ -1,6 +1,7 @@
 void Evaluate_Observables(variables *v, parameters *p) {
 
 	v->q12=Prod(v->S0,v->S2);
+	v->q13=Prod(v->S3,v->S2);
 	v->NPG2 = Norm2(v->PG2);
 	v->PGPG = Overlap(v->PG2,sqrt(v->NPG2),v->PG1,sqrt(v->NPG1));
 }
@@ -13,7 +14,7 @@ double Total_Energy(vector<double> S1, variables *v, parameters *p) {
 double Total_Energy_W(vector<double> S1, variables *v, parameters *p) {
 
 	v->TPG = Total_Projected_Gradient(S1,v,p);
-	return Norm2(v->PG1);
+	return Norm2(v->TPG);
 }
 
 vector<double> Total_Gradient(vector<double> S1, variables *v, parameters *p) {
@@ -30,8 +31,9 @@ vector<double> Total_Projected_Gradient(vector<double> S1, variables *v, paramet
 
 	v->G1 = Total_Gradient(S1,v,p);
 	v->Mu1 = -Prod(S1,v->G1);
+	double NS1 = Norm2(S1);
 
-	return Lin(1.,v->G1,v->Mu1/p->N,S1);
+	return Lin(1.,v->G1,v->Mu1/NS1,S1);
 }
 
 vector<double> Total_Projected_Gradient_W(vector<double> S1, variables *v, parameters *p) {
@@ -52,3 +54,17 @@ vector<double> Projected_Noise(vector<double> S1, variables *v, parameters *p, d
 
 	return Lin(1.,v->X,v->MuX/p->N,S1);
 }
+
+vector<double> Magnetization(vector<double> S1, vector<double> M, variables *v, parameters *p) {
+
+
+	return Lin(1.-1./p->R, M, 1./p->R, S1);
+}
+
+vector<double> Gradient_TAP(variables *v, parameters *p) {
+
+	double q = Norm2(v->M)/p->N;
+	vector<double> GradM = Total_Gradient(v->M, v, p);
+	return Lin(-1,GradM,-p->Temp*R1_TAP(p->a2,p->a3,q,1./p->Temp),v->M);
+}
+
