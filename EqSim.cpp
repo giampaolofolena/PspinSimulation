@@ -60,12 +60,14 @@ int main(int argc, char *argv[]){
 
 	fprintf(p.fout,"# a2 = %f a3 = %f D2 = %f D3 = %f seedJ = %d seedS = %d seedX = %d\n", p.a2,p.a3,p.D2,p.D3,p.seedJ,p.seedS,p.seedX); 
 
+	p.Beta = 1./p.Temp;
 	v.S1 = Initialize_System(&v,&p);
 
 	v.E1 = p.TotEN(v.S1,&v,&p);
 	v.PG1 = p.TotProjGR(v.S1,&v,&p);
 
 	Initialize_GD(&v, &p);
+	v.S3=v.S1;
 
 	v.T = p.Temp;
 
@@ -75,6 +77,8 @@ int main(int argc, char *argv[]){
 	double DT=0;
 	v.Time=0;
 	while(v.Time<p.TTime) {
+
+		//REPLICA 1
 
 		v.PX = Projected_Noise(v.S1,&v,&p,v.T);  
 		v.PG1 = Sum(v.PG1,v.PX);
@@ -97,24 +101,13 @@ int main(int argc, char *argv[]){
 		v.S1=v.S2; v.E1=v.E2; v.PG1=v.PG2; v.NPG1=v.NPG2;
 		v.CG0=v.CG1; v.H1=v.H2; v.RPG0=v.RPG1; v.RCG0=v.RCG1;
 
-		if(v.Time<p.TTime/2. && v.Time>p.TTime*(1/2.-0.01)) { v.S3=v.S1; }
+		//if(v.Time<p.TTime/2. && v.Time>p.TTime*(1/2.-0.01)) { v.S3=v.S1; }
 
-		/*DT += v.DTime;
-		if(DT/v.Time>0.2) {
-			p.TotEN = Total_Energy_W; 
-			p.TotProjGR = Total_Projected_Gradient_W; 
+		//REPLICA 3
+		v.PX = Projected_Noise(v.S3,&v,&p,v.T);  
+		v.PG2=Sum(p.TotProjGR(v.S3,&v,&p),v.PX);
+		v.S3 = RotateVector(v.S3,v.PG2,v.DTime/p.sqrtN*sqrt(Norm2(v.PG2)));
 
-			v.S_IS=Find_Inherent_Structure(v.S1,&v,&p);
-
-			cout << ' ' << Prod(S_IS0,v.S_IS)/p.N << endl;
-
-			p.TotEN = Total_Energy; 
-			p.TotProjGR = Total_Projected_Gradient;
-
-			DT=0;
-
-			v.IS.push_back(v.S_IS);
-		}*/
 	}
 
 	/*for(int i=0; i<v.IS.size(); i++){
